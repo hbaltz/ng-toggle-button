@@ -7,10 +7,12 @@ import { FormGroup, FormControl } from '@angular/forms';
   styleUrls: ['./app.component.scss']
 })
 export class AppComponent {
-  title = 'ng-toggle-button';
-  prueba = true
+  public title: string = 'ng-toggle-button';
+  public test: boolean = true;
+  public switchTest: boolean = true;
+  public switchTestValue: boolean = true;
 
-  config = {
+  public config = {
     value: true,
     name: '',
     disabled: false,
@@ -31,11 +33,22 @@ export class AppComponent {
     checkedLabel: '',
     uncheckedLabel: '',
     fontColor: {checked: '#fafafa', unchecked: '#f45a32'}
-  }
-  myForm: FormGroup;
+  };
+
+  public myForm: FormGroup;
+
   constructor() {
     this.myForm = new FormGroup({
-      'show': new FormControl()
-    })
+      show: new FormControl()
+    });
   }
+
+  public switch(): void {
+    this.switchTest = !this.switchTest;
+  }
+
+  public switchValue(): void {
+    this.switchTestValue = !this.switchTestValue;
+  }
+
 }

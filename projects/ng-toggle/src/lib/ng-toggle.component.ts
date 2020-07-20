@@ -1,13 +1,60 @@
-import { Component, OnInit, Input, forwardRef, Output, EventEmitter } from '@angular/core';
-import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
+import {Component, OnInit, Input, forwardRef, Output, EventEmitter, OnChanges, SimpleChanges} from '@angular/core';
+import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '@angular/forms';
 
-const DEFAULT_COLOR_CHECKED = '#0099CC'
-const DEFAULT_COLOR_UNCHECKED = '#e0e0e0'
-const DEFAULT_LABEL_CHECKED = ''
-const DEFAULT_LABEL_UNCHECKED = ''
-const DEFAULT_SWITCH_COLOR = '#fff'
-const DISABLED_COLOR = '#dbdbdb'
-const DISABLED_BUTTON_COLOR = 'silver'
+const DEFAULT_COLOR_CHECKED = '#0099CC';
+const DEFAULT_COLOR_UNCHECKED = '#e0e0e0';
+const DEFAULT_LABEL_CHECKED = '';
+const DEFAULT_LABEL_UNCHECKED = '';
+const DEFAULT_SWITCH_COLOR = '#fff';
+const DISABLED_COLOR = '#dbdbdb';
+const DISABLED_BUTTON_COLOR = 'silver';
+
+export const isObject = (value) => {
+  return typeof value === 'object';
+};
+
+export const has = (object, key) => {
+  return isObject(object) && object.hasOwnProperty(key);
+};
+
+export const get = (object, key, defaultValue) => {
+  return has(object, key) ? object[key] : defaultValue;
+};
+
+export const px = value => {
+  return `${value}px`;
+};
+
+export const translate = (x, y) => {
+  return `translate(${x}, ${y})`;
+};
+
+export type toggleConfig = {
+  checked: string,
+  unchecked: string,
+};
+
+interface Style {
+  width: string;
+  height: string;
+  transition: string;
+}
+
+interface CoreStyle extends Style {
+  backgroundColor: string | toggleConfig;
+  borderRadius: string;
+}
+
+interface ButtonStyle extends Style {
+  transform: string;
+  background: string | toggleConfig;
+}
+
+interface LabelStyle {
+  lineHeight: string;
+  fontSize: string;
+  color: string | toggleConfig;
+}
 
 @Component({
   selector: 'ng-toggle',
@@ -21,62 +68,67 @@ const DISABLED_BUTTON_COLOR = 'silver'
     }
   ]
 })
-export class NgToggleComponent implements OnInit, ControlValueAccessor {
+export class NgToggleComponent implements OnInit, OnChanges, ControlValueAccessor {
 
-  @Input() value: boolean = true
-  @Input() name: string = ''
-  @Input() disabled: boolean = false
+  @Input() public value: boolean = true;
+  @Input() public name: string = '';
+  @Input() public disabled: boolean = false;
 
-  @Input() height: number = 25
-  @Input() width: number = 45
-  @Input() margin: number = 2
-  @Input() fontSize: number
-  @Input() speed: number = 300
-  @Input() color: string | toggleConfig
-  @Input() switchColor: string | toggleConfig
-  @Input() labels: boolean | toggleConfig = true
-  @Input() checkedLabel: string = ''
-  @Input() uncheckedLabel: string = ''
-  @Input() fontColor: string | toggleConfig
-   
-  cssColors: boolean = false
-  
-  @Output() change = new EventEmitter()
-  toggled: boolean
+  @Input() public height: number = 25;
+  @Input() public width: number = 45;
+  @Input() public margin: number = 2;
+  @Input() public fontSize: number;
+  @Input() public speed: number = 300;
+  @Input() public color: string | toggleConfig;
+  @Input() public switchColor: string | toggleConfig;
+  @Input() public labels: boolean | toggleConfig = true;
+  @Input() public checkedLabel: string = '';
+  @Input() public uncheckedLabel: string = '';
+  @Input() public fontColor: string | toggleConfig;
 
-  constructor() { }
+  @Output() public change = new EventEmitter();
 
-  ngOnInit() {
-    this.toggled = this.value
+  public cssColors: boolean = false;
+  public toggled: boolean;
+
+  private onChange = (_: any) => {
+  }
+  private onTouch = () => {
   }
 
-  onChange = (_:any) => { }
-  onTouch = () => { }
-
-  onInput(value: boolean) {
-    this.value = value;
-    this.onTouch();
-    this.onChange(this.value);
+  constructor() {
   }
 
-  writeValue(value: any): void {
+  public ngOnChanges(changes: SimpleChanges): void {
+    if (changes.value) {
+      this.toggled = this.value;
+    }
+  }
+
+  public ngOnInit(): void {
+    this.toggled = this.value;
+  }
+
+  public writeValue(value: any): void {
     if (value) {
       this.value = value || false;
     } else {
       this.value = false;
     }
+
+    this.toggled = this.value;
   }
-  registerOnChange(fn: any): void {
+  public registerOnChange(fn: any): void {
     this.onChange = fn;
   }
-  registerOnTouched(fn: any): void {
+  public registerOnTouched(fn: any): void {
     this.onTouch = fn;
   }
-  setDisabledState(isDisabled: boolean): void {
+  public setDisabledState(isDisabled: boolean): void {
     this.disabled = isDisabled;
   }
 
-  get coreStyle () {
+  public get coreStyle(): CoreStyle {
     return {
       width: px(this.width),
       height: px(this.height),
@@ -85,126 +137,115 @@ export class NgToggleComponent implements OnInit, ControlValueAccessor {
         ? null
         : (this.disabled ? this.colorDisabled : this.colorCurrent),
       borderRadius: px(Math.round(this.height / 2))
-    }
+    };
   }
-  get buttonRadius () {
+
+  public get buttonRadius(): number {
     return this.height - this.margin * 2;
   }
-  get distance () {
-    return px(this.width - this.height + this.margin)
+
+  public get distance(): string {
+    return px(this.width - this.height + this.margin);
   }
-  get buttonStyle () {
-    const transition = `all ${this.speed}ms`
-    const margin = px(this.margin)
+
+  public get buttonStyle(): ButtonStyle {
+    const transition = `all ${this.speed}ms`;
+    const margin = px(this.margin);
     const transform = this.toggled
       ? translate(this.distance, margin)
-      : translate(margin, margin)
+      : translate(margin, margin);
     let background = this.switchColor
       ? this.switchColorCurrent
-      : null
-    background = this.disabled ? DISABLED_BUTTON_COLOR : background
+      : null;
+    background = this.disabled ? DISABLED_BUTTON_COLOR : background;
     return {
       width: px(this.buttonRadius),
       height: px(this.buttonRadius),
       transition,
       transform,
       background,
-    }
+    };
   }
-  get labelStyle () {
+
+  public get labelStyle(): LabelStyle {
     return {
       lineHeight: px(this.height),
       fontSize: this.fontSize ? px(this.fontSize) : null,
       color: this.fontColor ? this.fontColorCurrent : null
-    }
+    };
   }
 
-  get colorChecked () {
-    let { color } = this
+  public get colorChecked(): string | toggleConfig {
+    const { color } = this;
     if (!isObject(color)) {
-      return color || DEFAULT_COLOR_CHECKED
+      return color || DEFAULT_COLOR_CHECKED;
     }
-    return get(color, 'checked', DEFAULT_COLOR_CHECKED)
+    return get(color, 'checked', DEFAULT_COLOR_CHECKED);
   }
-  get colorUnchecked () {
-    return get(this.color, 'unchecked', DEFAULT_COLOR_UNCHECKED)
+
+  public get colorUnchecked(): string {
+    return get(this.color, 'unchecked', DEFAULT_COLOR_UNCHECKED);
   }
-  get colorDisabled () {
-    return get(this.color, 'disabled', DISABLED_COLOR)
+
+  public get colorDisabled(): string {
+    return get(this.color, 'disabled', DISABLED_COLOR);
   }
-  get colorCurrent () {
+
+  public get colorCurrent(): string | toggleConfig {
     return this.toggled
       ? this.colorChecked
-      : this.colorUnchecked
+      : this.colorUnchecked;
   }
-  get labelChecked () {
-    return get(this.labels, 'checked', DEFAULT_LABEL_CHECKED)
+
+  public get labelChecked(): string {
+    return get(this.labels, 'checked', DEFAULT_LABEL_CHECKED);
   }
-  get labelUnchecked () {
-    return get(this.labels, 'unchecked', DEFAULT_LABEL_UNCHECKED)
+
+  public get labelUnchecked(): string {
+    return get(this.labels, 'unchecked', DEFAULT_LABEL_UNCHECKED);
   }
-  get switchColorChecked () {
-    return get(this.switchColor, 'checked', DEFAULT_SWITCH_COLOR)
+
+  public get switchColorChecked(): string {
+    return get(this.switchColor, 'checked', DEFAULT_SWITCH_COLOR);
   }
-  get switchColorUnchecked () {
-    return get(this.switchColor, 'unchecked', DEFAULT_SWITCH_COLOR)
+
+  public get switchColorUnchecked(): string {
+    return get(this.switchColor, 'unchecked', DEFAULT_SWITCH_COLOR);
   }
-  get switchColorCurrent () {
+
+  public get switchColorCurrent(): string | toggleConfig {
     if (!isObject(this.switchColor)) {
-      return this.switchColor || DEFAULT_SWITCH_COLOR
+      return this.switchColor || DEFAULT_SWITCH_COLOR;
     }
     return this.toggled
       ? this.switchColorChecked
-      : this.switchColorUnchecked
+      : this.switchColorUnchecked;
   }
 
-  get fontColorChecked () {
-    return get(this.fontColor, 'checked', DEFAULT_SWITCH_COLOR)
+  public get fontColorChecked(): string {
+    return get(this.fontColor, 'checked', DEFAULT_SWITCH_COLOR);
   }
-  get fontColorUnchecked () {
-    return get(this.fontColor, 'unchecked', DEFAULT_SWITCH_COLOR)
+
+  public get fontColorUnchecked(): string {
+    return get(this.fontColor, 'unchecked', DEFAULT_SWITCH_COLOR);
   }
-  get fontColorCurrent () {
+
+  public get fontColorCurrent(): string | toggleConfig {
     if (!isObject(this.fontColor)) {
-      return this.fontColor || DEFAULT_SWITCH_COLOR
+      return this.fontColor || DEFAULT_SWITCH_COLOR;
     }
     return this.toggled
       ? this.fontColorChecked
-      : this.fontColorUnchecked
+      : this.fontColorUnchecked;
   }
 
-  toggle(event) {
+  public toggle(): void {
     const toggled = !this.toggled;
     this.toggled = toggled;
 
     this.value = toggled;
     this.onTouch();
     this.onChange(toggled);
-    this.change.emit(toggled)
+    this.change.emit(toggled);
   }
-}
-
-export const isObject = (value) => {
-  return typeof value === 'object'
-}
-
-export const has = (object, key) => {
-  return isObject(object) && object.hasOwnProperty(key)
-}
-
-export const get = (object, key, defaultValue) => {
-  return has(object, key) ? object[key] : defaultValue
-}
-
-export const px = value => {
-  return `${value}px`
-}
-
-export const translate = (x, y) => {
-  return `translate(${x}, ${y})`
-}
-
-export type toggleConfig = {
-  checked: string,
-  unchecked: string
 }

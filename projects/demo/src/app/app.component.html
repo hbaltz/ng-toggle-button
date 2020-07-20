@@ -1,10 +1,10 @@
 <nav class="navbar" role="navigation" aria-label="main navigation">
   <div class="navbar-brand">
     <a class="navbar-item" href="https://vicmans.com">
-      <img src="https://vicmans.com/v.png" width="28" height="28"> Victor
+      <img src="https://vicmans.com/v.png" width="28" height="28"> Ng-toggle-button
     </a>
   </div>
-  <a class="button is-light" href="https://github.com/vicmans/ng-toggle-button">
+  <a class="button is-light" href="https://github.com/hbaltz/ng-toggle-button">
     <strong>GitHub</strong>
   </a>
 
@@ -17,18 +17,42 @@
   <ng-toggle
     [value]="true"
   ></ng-toggle>
-  
+
   <h2 class="subtitle">
     ngModel
   </h2>
   <ng-toggle
-    [(ngModel)]="prueba"
-    [labels]="{checked: 'Encendido', unchecked: 'Apagado'}"
+    [(ngModel)]="test"
+    [labels]="{checked: 'On', unchecked: 'Off'}"
     [color]="{checked: '#00a388', unchecked: '#ddd', disabled: '#ddd'}"
     [width]="82"
   ></ng-toggle>
-  <p class="is-family-code">ngModel: {{prueba}}</p>
-  
+  <p class="is-family-code">ngModel: {{test}}</p>
+
+  <h2 class="subtitle">
+    Switch button ng Model
+  </h2>
+  <ng-toggle
+    [(ngModel)]="switchTest"
+    [labels]="{checked: 'On', unchecked: 'Off'}"
+    [color]="{checked: '#00a388', unchecked: '#ddd', disabled: '#ddd'}"
+    [width]="82"
+  ></ng-toggle>
+  <p class="is-family-code">ngModel: {{switchTest}}</p>
+  <button (click)="switch()">Switch</button>
+
+  <h2 class="subtitle">
+    Switch button value
+  </h2>
+  <ng-toggle
+    [value]="switchTestValue"
+    [labels]="{checked: 'On', unchecked: 'Off'}"
+    [color]="{checked: '#00a388', unchecked: '#ddd', disabled: '#ddd'}"
+    [width]="82"
+  ></ng-toggle>
+  <p class="is-family-code">ngModel: {{switchTestValue}}</p>
+  <button (click)="switchValue()">Switch</button>
+
   <h2 class="subtitle">
     Disabled
   </h2>
@@ -79,7 +103,7 @@
   <h2 class="subtitle">
     Configure
   </h2>
-  <div class="columns"> 
+  <div class="columns">
     <div class="column is-half">
       <ng-toggle
         [(ngModel)]="config.value"
@@ -133,7 +157,7 @@
           </div>
         </div>
       </div>
-      
+
       <div class="field is-horizontal">
         <div class="field-label">
           <label class="label" for="disabled">height: </label>
