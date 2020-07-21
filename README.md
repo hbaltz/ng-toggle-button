@@ -6,13 +6,7 @@ This is a toggle switch button component, you can see the demo [here](https://vi
 ## Instalation
 
 ```
-npm i ng-toggle-button
-```
-
-or
-
-```
-yarn add ng-toggle-button
+npm i ngx-toggle-button
 ```
 
 ## Usage
@@ -20,7 +14,7 @@ yarn add ng-toggle-button
 Import the module
 
 ```typescript
-import { NgToggleModule } from 'ng-toggle-button';
+import { NgToggleModule } from 'ngx-toggle-button';
 @NgModule({
   ...
   imports: [
